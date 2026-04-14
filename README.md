@@ -179,18 +179,50 @@ dmesg | tail -n 100
 
 Expected: no zombie leak, containers reaped, monitor list cleaned on module unload.
 
-## Screenshots to Take (Exact Checklist)
+## Demo Screenshots
 
-1. Multi-container supervision: supervisor terminal + two running containers under one parent.
-2. Metadata tracking: output of `sudo ./engine ps` with IDs, PIDs, state, limits, reason.
-3. Bounded-buffer logging: `sudo ./engine logs <id>` and `ls -l logs/`.
-4. CLI and IPC: command request (`start` or `stop`) with immediate supervisor response.
-5. Soft-limit warning: `dmesg` lines showing `SOFT LIMIT container=...`.
-6. Hard-limit enforcement: `dmesg` lines showing `HARD LIMIT ...`, plus `sudo ./engine ps` showing `hard_limit_killed`.
-7. Scheduling experiment: side-by-side `time` outputs or logs showing behavior difference.
-8. Clean teardown: `sudo ./engine ps` post-stop + `ps -ef | grep defunct` showing no zombies.
+> Note: screenshot files are stored in `screenshots/` at repository root.
 
-Add a 1-line caption below each screenshot.
+### Task 1 - Multi-container supervision
+
+![Task 1](screenshots/task1_1.png)
+
+Caption: Two containers are launched under one long-running supervisor process.
+
+### Task 2 - CLI and IPC command flow
+
+![Task 2](screenshots/task2.png)
+
+Caption: CLI `start`/`ps`/`stop` requests are accepted by the supervisor via control IPC.
+
+### Task 3 - Bounded-buffer logging
+
+![Task 3 (start + log file)](screenshots/task3_1.png)
+![Task 3 (log content)](screenshots/task3_2.png)
+
+Caption: Container output is captured and persisted in per-container log files through the logging pipeline.
+
+### Task 4 - Soft and hard memory limits
+
+![Task 4 (events)](screenshots/task4_1.png)
+![Task 4 (metadata reason)](screenshots/task4_2.png)
+
+Caption: Kernel monitor emits `SOFT LIMIT` warning, then enforces `HARD LIMIT` kill; supervisor shows `hard_limit_killed`.
+
+### Task 5 - Scheduler experiments
+
+![Task 5 (nice comparison)](screenshots/task5_1.png)
+![Task 5 (CPU vs IO concurrent run)](screenshots/task5_2.png)
+![Task 5 (concurrent metadata)](screenshots/task5_3.png)
+
+Caption: Experiments compare different nice priorities and concurrent CPU-bound vs I/O-oriented workloads.
+
+### Task 6 - Resource cleanup and teardown
+
+![Task 6 (stop/reap/no zombies)](screenshots/task6_1.png)
+![Task 6 (module unload)](screenshots/task6_2.png)
+
+Caption: Containers are reaped, no zombie residue is observed, supervisor is stopped, and monitor module unloads cleanly.
 
 ## Engineering Analysis
 
@@ -229,11 +261,14 @@ Different `nice` values shift CPU share and completion time for CPU-bound tasks;
 
 ## Scheduler Experiment Results
 
-Capture your measured data from your run (sample template):
+Measured outputs from our VM run:
 
-| Experiment | Config A | Config B | Observed Difference |
+| Experiment | Config A | Config B | Observed Outcome |
 | --- | --- | --- | --- |
-| CPU vs CPU | `nice 0` | `nice 10` | lower-nice process completed earlier |
-| CPU vs IO | `/cpu_hog` | `/io_pulse` | io task remained responsive while cpu task consumed cycles |
+| CPU vs CPU (different priority) | `time ... /cpu_hog --nice 0` | `time ... /cpu_hog --nice 9` | Run completed with `real 3m18.860s` vs `real 0m36.274s` in the captured session output. |
+| CPU vs IO (concurrent) | `start ... /cpu_hog --nice 0` | `start ... /io_pulse --nice 0` | Both workloads were launched concurrently and tracked via `engine ps`; both completed and transitioned to `exited`. |
 
-Include raw command output snippets or timing data from your VM run.
+Interpretation:
+
+- The runtime successfully supports scheduler experiments across different priority settings and workload behavior classes.
+- Timing and state evidence show that Linux scheduling outcomes differ by configuration and workload type.
