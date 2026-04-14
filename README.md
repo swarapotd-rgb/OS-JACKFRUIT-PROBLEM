@@ -2,8 +2,8 @@
 
 ## Team Information
 
-- Name 1: `<your name>` | SRN: `<your srn>`
-- Name 2: `<your name>` | SRN: `<your srn>`
+- Name 1: `Swara Potdar` | SRN: `PES1UG24CS487`
+- Name 2: `Shreya Shahapur` | SRN: `PES1UG24CS442`
 
 ## Build, Load, and Run Instructions
 
