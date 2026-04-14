@@ -905,20 +905,28 @@ static int run_supervisor(const char *rootfs)
     while (!g_stop && !ctx.should_stop) {
         fd_set rfds;
         struct timeval tv;
+        int saved_errno = 0;
         FD_ZERO(&rfds);
         FD_SET(ctx.server_fd, &rfds);
         tv.tv_sec = 1;
         tv.tv_usec = 0;
         rc = select(ctx.server_fd + 1, &rfds, NULL, NULL, &tv);
+        if (rc < 0) {
+            saved_errno = errno;
+            if (saved_errno == EINTR) {
+                if (g_sigchld) {
+                    g_sigchld = 0;
+                    reap_children(&ctx);
+                }
+                continue;
+            }
+            errno = saved_errno;
+            perror("select");
+            break;
+        }
         if (g_sigchld) {
             g_sigchld = 0;
             reap_children(&ctx);
-        }
-        if (rc < 0) {
-            if (errno == EINTR)
-                continue;
-            perror("select");
-            break;
         }
         if (rc == 0)
             continue;
