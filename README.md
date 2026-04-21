@@ -211,9 +211,9 @@ Caption: Kernel monitor emits `SOFT LIMIT` warning, then enforces `HARD LIMIT` k
 
 ### Task 5 - Scheduler experiments
 
-![Task 5 (nice comparison)](screenshots/task5_1.png)
-![Task 5 (CPU vs IO concurrent run)](screenshots/task5_2.png)
-![Task 5 (concurrent metadata)](screenshots/task5_3.png)
+![Task 5 (nice comparison)](screenshots/task5_1_new.png)
+![Task 5 (CPU vs IO concurrent run)](screenshots/task5_2_new.png)
+
 
 Caption: Experiments compare different nice priorities and concurrent CPU-bound vs I/O-oriented workloads.
 
