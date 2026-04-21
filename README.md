@@ -197,7 +197,7 @@ Caption: CLI `start`/`ps`/`stop` requests are accepted by the supervisor via con
 
 ### Task 3 - Bounded-buffer logging
 
-![Task 3 (start + log file)](screenshots/Screenshot 2026-04-21 103033.png)
+![Task 3 (start + log file)](screenshots/task3_new)
 
 
 Caption: Container output is captured and persisted in per-container log files through the logging pipeline.
