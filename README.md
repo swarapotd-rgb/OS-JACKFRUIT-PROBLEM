@@ -265,7 +265,7 @@ Measured outputs from our VM run:
 
 | Experiment | Config A | Config B | Observed Outcome |
 | --- | --- | --- | --- |
-| CPU vs CPU (different priority) | `time ... /cpu_hog --nice 0` | `time ... /cpu_hog --nice 9` | Run completed with `real 3m18.860s` vs `real 0m36.274s` in the captured session output. |
+| CPU vs CPU (different priority) | `time ... /cpu_hog --nice 0` | `time ... /cpu_hog --nice 9` | Run completed with `real 0m12.668s` vs `real 1m2.671s` in the captured session output. |
 | CPU vs IO (concurrent) | `start ... /cpu_hog --nice 0` | `start ... /io_pulse --nice 0` | Both workloads were launched concurrently and tracked via `engine ps`; both completed and transitioned to `exited`. |
 
 Interpretation:
